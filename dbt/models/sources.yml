@@ -1,0 +1,25 @@
+version: 2
+
+sources:
+  - name: us_civil_flights_sources
+    loader: gcloud storage
+
+    tables:
+     - name: src_us_flights_2023
+       external:
+        location: 'gs://od-us-civil-flights-dl-bucket/data/US_flights_2023.csv'
+        options:
+          format: csv
+          skip_leading_rows: 1
+     - name: src_weather_meteo_by_airport
+       external:
+        location: 'gs://od-us-civil-flights-dl-bucket/data/weather_meteo_by_airport.csv'
+        options:
+          format: csv
+          skip_leading_rows: 1
+     - name: src_cancelled_diverted_2023
+       external:
+        location: 'gs://od-us-civil-flights-dl-bucket/data/Cancelled_Diverted_2023.csv'
+        options:
+          format: csv
+          skip_leading_rows: 1 

@@ -1,0 +1,29 @@
+with src as (
+    select * from {{source("us_civil_flights_sources", 'src_cancelled_diverted_2023')}}
+)
+SELECT
+	FlightDate,
+	Day_Of_Week,
+	Airline,
+	Tail_Number,
+	Cancelled,
+	Diverted,
+	Dep_Airport,
+	Dep_CityName,
+	DepTime_label,
+	Dep_Delay,
+	Dep_Delay_Tag,
+	Dep_Delay_Type,
+	Arr_Airport,
+	Arr_CityName,
+	Arr_Delay,
+	Arr_Delay_Type,
+	Flight_Duration,
+	Distance_type,
+	Delay_Carrier,
+	Delay_Weather,
+	Delay_NAS,
+	Delay_Security,
+	Delay_LastAircraft
+FROM
+	src
