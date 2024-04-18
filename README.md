@@ -1,30 +1,30 @@
 # US Civil Flights 2023 - Data Engineering Zoomcamp 2024 Final Project
 
-This repository contains my final project for the completion of Data Engineering Zoomcamp by DataTalks.Club.
+This repository contains my final project for the completion of Data Engineering Zoomcamp by DataTalks.Club (2024 cohort).
 
 ## Project description
 
 This project aims to develop a robust data engineering pipeline focused on US civil flights data for year 2023, with the objective of building a comprehensive data warehouse that supports advanced analytics and visualization through a Business Intelligence (BI) tool. The goal is to enable stakeholders to make informed decisions by providing insights into flight patterns, performance, and trends.
 
 ## Source Data
-Used dataset is Kaggle [US 2023 Civil Flights, delays, meteo and aircrafts](https://www.kaggle.com/datasets/bordanova/2023-us-civil-flights-delay-meteo-and-aircraft) which is obtained from Kagge via its API
-It is complete dataset of US civil aviation 2023 containing :
+Used dataset is Kaggle [US 2023 Civil Flights, delays, meteo and aircrafts](https://www.kaggle.com/datasets/bordanova/2023-us-civil-flights-delay-meteo-and-aircraft) which is obtained from Kagge via its API.
+It is a complete dataset of US civil aviation 2023 containing :
 - departure and arrival delays for each flight
 - descriptions and delay times
 - weather with rain, snow, pressure, temperature min/max/avg, wind - speed and direction for each airport
 - associated airlines
 - information for each plane with manufacturer, model and age.  
 
-Dataset consist of 3 files in CSV format (comma-serated, 1 header row):
-- US_flights_2023.csv: main table containing all flight information except weather
-- weather_meteo_by_airport.csv: table containing weather data (temperatures, air pressure, snow cover, precipitation, wind strength and direction) for each airport and day of the year
-- Cancelled_Diverted_2023.csv: table of cancellations and diverted flights for a dedicated analysis. 
+Dataset consist of 3 files in CSV format (comma-separated, 1 header row):
+- *US_flights_2023.csv*: main table containing all flight information except weather
+- *weather_meteo_by_airport.csv*: table containing weather data (temperatures, air pressure, snow cover, precipitation, wind strength and direction) for each airport and day of the year
+- *Cancelled_Diverted_2023.csv*: table of cancellations and diverted flights for a dedicated analysis. 
 
 ## Tools / Tech Stack
 The following components were used to implement the project:
 - Data Extraction & Ingestion: **Python** (using Kaggle API and GCS library)
 - Data Lake: **Google Cloud Storage**
-- Workflow Management: **Google Cloud Composer** (managed Apache Airflow product in Google Cloud)
+- Workflow Management: **Google Cloud Composer** (managed **Apache Airflow** product in Google Cloud)
 - Data Warehouse: **Google BigQuery**
 - Data Transformation: **dbt cloud**
 - Reporting & BI: **Google Looker Studio**
@@ -48,21 +48,21 @@ As a results of this step we have source data (3 files) loaded to a Data Lake (G
 
 ### Data Processing (T step)
 
-Data processing is done inside BigQuery and manager by **dbt** framework (powered by dbt cloud). All dbt models and settings are located in [/dbt](/dbt/) subfolder (git repor is linked to a dbt cloud project)
+Data processing is done inside BigQuery and managed by **dbt** framework (powered by dbt cloud). All dbt models and settings are located in [/dbt](/dbt/) subfolder (git repo is linked to a dbt cloud project)
 
 There are following steps in data transformation:
-- **Access sources**. External tables are created in BigQuery using dbt_external_tables module. These external tables allow BigQuery to access source .csv files in GCS bucket as a relation tables. External tables are defined in [sources.yml](/dbt/models/sources.yml)
-    - src_us_flights_2023: main flight table
-    - src_cancelled_diverted_2023: cancelled flights
-    - src_weather_meteo_by_airport: meteo data
+- **Access sources**. External tables are created in BigQuery using dbt_external_tables module. These external tables allow BigQuery to access source .csv files in GCS bucket as relational tables. External tables are defined in [sources.yml](/dbt/models/sources.yml)
+    - *src_us_flights_2023*: main flight table
+    - *src_cancelled_diverted_2023*: cancelled flights
+    - *src_weather_meteo_by_airport*: meteo data
 - **Build staging models** (/models/stage): create 1-1 models that access source data without any transformation (except for column rename), materialized as view.
-    - stg_us_flights: main flight table
-    - stg_cancelled_flights: cancelled flights
-    - stg_weather_meteo: meteo data
+    - *stg_us_flights*: main flight table
+    - *stg_cancelled_flights*: cancelled flights
+    - *stg_weather_meteo*: meteo data
 - Build marks (/models/marts): create fact & dimensional tables. Transformations are possible and data in materialized as a tables, considering physical design (partitioning and clustering)
-    - **ft_flights**: main fact table for flights. Partitioned by 'Flight_Date' column (month granularity) and clustered by ['Airline','Tail_Number'] columns
-    - **ft_weather_meteo**: meteo data. Small table so no need for partitioning/clustering
-    - **ft_flights_meteo**: final data mart for BI/reporting which combines both flight data and relative meteo data in one table. Partitioned and clustered the same way as ft_flights
+    - *ft_flights*: main fact table for flights. Partitioned by 'Flight_Date' column (month granularity) and clustered by ['Airline','Tail_Number'] columns
+    - *ft_weather_meteo*: meteo data. Small table so no need for partitioning/clustering
+    - *ft_flights_meteo*: final data mart for BI/reporting which combines both flight data and relative meteo data in one table. Partitioned and clustered the same way as ft_flights
 
 Here is a data lineage screen from dbt:
 ![data lineage](/images/dbt-data-lineage.png)
